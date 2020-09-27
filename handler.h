@@ -1,5 +1,4 @@
 #pragma once
-
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -14,22 +13,33 @@ private:
 		char position[22];
 		char birth_date[10];
 	};
+	int lenght;
+	char* buffer;
 	record* records_array = new record[4000];
-	record** index_array = new record * [4000];
 public:
+	Handler() {
+		lenght = 0;
+		buffer = nullptr;
+	}
+	~Handler() {
+		delete[] buffer;
+	}
 	bool GetDataFromFile(char* filename) {
-		std::ifstream file;
-		std::string temp;
-		file.open(filename);
-		if (file.is_open()) {
-			std::cout << " Success " << std::endl;
-		}
-		else {
-			std::cout << "Can't open file " << std::endl;
-			return false;
-		}
-		while (getline(file, temp)) {
-			std::cout << temp << std::endl << std::endl;
+		std::ifstream file(filename, std::ifstream::binary);
+		if (file) {
+			file.seekg(0, file.end);
+			this->lenght = file.tellg();
+			file.seekg(0, file.beg);
+			this->buffer = new char[this->lenght];
+			std::cout << "Reading " << this->lenght << " characters... ";
+			file.read(this->buffer, this->lenght);
+			if (file)
+				std::cout << "all characters read successfully.\n";
+			else {
+				std::cout << "error: only " << file.gcount() << "could be read";
+				return false;
+			}
+			file.close();
 		}
 		return true;
 	}
