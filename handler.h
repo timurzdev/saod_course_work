@@ -1,15 +1,13 @@
 #pragma once
 #include <iostream>
 #include <fstream>
-#include <string>
-#include <sstream>
 
 class Handler {
 private:
 	struct record
 	{
 		char fullName[30]; //30 bytes
-		int number; //4 bytes
+		unsigned short int number; //2 bytes
 		char position[22]; //22 bytes
 		char birth_date[10]; //10 bytes
 	};
@@ -22,16 +20,14 @@ public:
 	~Handler() {
 		delete[] records_array;
 	}
-	int BytesToInt(unsigned char* buff) {
-		int a = int((buff[0]) << 24 |
-			(buff[1]) << 16 |
-			(buff[2]) << 8 |
-			(buff[3]));
+	unsigned short int BytesToInt(unsigned char* buff) {
+		unsigned short int a = (unsigned short int)((buff[0]) << 8 |
+			(buff[1]) << 0);
 		return a;
 	}
 	bool GetDataFromFile(char* filename) {
 		char fullName_t[30];
-		int number_t;
+		unsigned short int number_t;
 		char position_t[22];
 		char birth_date_t[10];
 		char* memblock;
@@ -92,9 +88,13 @@ public:
 	void PrintStruct() {
 		std::cout << std::endl;
 		for (size_t i = 3900; i < 4000; i++) {
-			std::cout << this->records_array[i].fullName << "     ";
-			std::cout << this->records_array[i].number << "  ";
-			std::cout << this->records_array[i].position << "  ";
+			std::cout.width(30);
+			std::cout << this->records_array[i].fullName << " ";
+			std::cout.width(10);
+			std::cout << this->records_array[i].number << " ";
+			std::cout.width(22);
+			std::cout << this->records_array[i].position << " ";
+			std::cout.width(10);
 			std::cout << this->records_array[i].birth_date << std::endl;
 		}
 		
