@@ -21,9 +21,9 @@ public:
 		delete[] records_array;
 	}
 	unsigned short int BytesToInt(unsigned char* buff) {
-		unsigned short int a = (unsigned short int)((buff[0]) << 8 |
-			(buff[1]) << 0);
-		return a;
+		unsigned char high = buff[0];
+		unsigned char low = buff[1];
+		return high + (low & 0xFF >> (CHAR_BIT - 2));
 	}
 	bool GetDataFromFile(char* filename) {
 		char fullName_t[30];
@@ -87,7 +87,7 @@ public:
 
 	void PrintStruct() {
 		std::cout << std::endl;
-		for (size_t i = 3900; i < 4000; i++) {
+		for (size_t i = 0; i < 100; i++) {
 			std::cout.width(30);
 			std::cout << this->records_array[i].fullName << " ";
 			std::cout.width(10);
