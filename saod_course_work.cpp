@@ -8,6 +8,6 @@ int main()
     Handler handler;
     char filename []= "./Debug/testBase2.dat";
     handler.GetDataFromFile(filename);
-    /*handler.PrintStruct();*/
+    handler.PrintStruct();
 }
 
