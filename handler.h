@@ -23,7 +23,7 @@ public:
 	unsigned short int BytesToInt(unsigned char* buff) {
 		unsigned char high = buff[0];
 		unsigned char low = buff[1];
-		return high + (low & 0xFF >> (CHAR_BIT - 2));
+		return high + (low & 0xFF >> (CHAR_BIT));
 	}
 	bool GetDataFromFile(char* filename) {
 		char fullName_t[30];
