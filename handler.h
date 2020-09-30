@@ -39,6 +39,7 @@ public:
 		for (size_t i = 0; i < 4000; i++) {
 			strcpy_s(this->records_array[i].fullName, std::strlen(this->records_array[i].fullName) + 1, DeleteSpacesInString(this->records_array[i].fullName));
 			strcpy_s(this->records_array[i].position, std::strlen(this->records_array[i].position) + 1, DeleteSpacesInString(this->records_array[i].position));
+			strcpy_s(this->records_array[i].birth_date, std::strlen(this->records_array[i].birth_date) + 1, DeleteSpacesInString(this->records_array[i].birth_date));
 		}
 	}
 	void Menu() {
@@ -142,6 +143,8 @@ public:
 		std::cout << std::endl;
 		system("CLS");
 		size_t end = start + 20;
+		if (end >= 4000)
+			return;
 		int check;
 		if (this->records_array[0].number != 130) {
 			std::cout << "Array is empty " << std::endl;
