@@ -52,7 +52,13 @@ public:
 				this->records_index_array = GetIndexArray();
 				break;
 			case 2:
-				PrintStruct(0);
+				size_t page;
+				std::cout << "Input page number(1 - 200)" << std::endl;
+				std::cin >> page;
+				if (page < 1 || page >200) {
+					break;
+				}
+				PrintStruct(page);
 				break;
 			default:
 				break;
@@ -72,7 +78,6 @@ public:
 		else {
 			while (file.read((char*)(&tmp), sizeof(record))) {
 				records_array[index] = tmp;
-				file.seekg(sizeof(record), std::ios::cur);
 				index++;
 				if (index >= 4000) {
 					break;
@@ -82,18 +87,19 @@ public:
 		return records_array;
 	}
 
-	void PrintStruct(size_t start) {
+	void PrintStruct(size_t page) {
 		std::cout << std::endl;
 		system("CLS");
+		size_t start = (page-1) * 20;
 		size_t end = start + 20;
-		if (end >= 4000)
-			return;
-		int check;
-		if (this->records_array[0].number != 130) {
-			std::cout << "Array is empty " << std::endl;
+		if (end > 4000) {
+			std::cout << "Out of range " << std::endl;
 			return;
 		}
+		int check;
 		for (size_t i = start; i < end; i++) {
+			std::cout.width(5);
+			std::cout << i + 1;
 			std::cout.width(30);
 			std::cout << this->records_index_array[i]->fullName << " ";
 			std::cout.width(5);
@@ -103,12 +109,26 @@ public:
 			std::cout.width(10);
 			std::cout << this->records_index_array[i]->birth_date << std::endl;
 		}
-		std::cout << "Print next 20? (1/0) : ";
+		std::cout << "Print next 20? (1), previous 20? (0), exit (any other symbol) : ";
 		std::cin >> check;
-		if (check) {
-			PrintStruct(start + 20);
+		if (check == 1) {
+			if (page - 1 > 200) {
+				std::cout << "Error..." << std::endl;
+				return;
+			}
+			PrintStruct(page + 1);
 		}
-		system("CLS");
+		else if (check == 0) {
+			if (page - 1 < 1) {
+				std::cout << "Error..." << std::endl;
+				return;
+			}
+			PrintStruct(page - 1);
+		}
+		else {
+			return;
+		}
+		//system("CLS");
 		return;
 	}
 	
