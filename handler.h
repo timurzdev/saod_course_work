@@ -58,6 +58,98 @@ private:
 		std::cout << "     Birth Date";
 		std::cout << std::endl;
 	}
+	void GetDataFromFile(char* filename) {
+		record tmp{};
+		std::ifstream file(filename, std::ios::binary);
+		if (!file) {
+			std::cout << "Error opening file..." << std::endl;
+			return;
+		}
+		else {
+			while (file.read((char*)(&tmp), sizeof(record))) {
+				this->records_array.push_back(tmp);
+			}
+		}
+		return;
+	}
+	void swap(record** first, record** second) {
+		record* temp = *first;
+		*first = *second;
+		*second = temp;
+		return;
+	}
+
+	void QuickSort(int L, int R) {
+		int i = L;
+		int j = R;
+		record temp = *records_index_array[(i + j) / 2];
+
+		while (i <= j) {
+			while (*records_index_array[i] < temp) {
+				i++;
+			}
+			while (*records_index_array[j] > temp) {
+				j--;
+			}
+			if (i <= j) {
+				swap(&records_index_array[i], &records_index_array[j]);
+				i++;
+				j--;
+			}
+		}
+		if (L < j) {
+			QuickSort(L, j);
+		}
+		if (i < R) {
+			QuickSort(i, R);
+		}
+		return;
+	}
+
+	void PrintStruct(size_t page) {
+		std::cout << std::endl;
+		system("CLS");
+		size_t start = (page - 1) * 20;
+		size_t end = start + 20;
+		int check;
+		if (end > 4000) {
+			std::cout << "Out of range " << std::endl;
+			return;
+		}
+		PrintHeading();
+		for (size_t i = start; i < end; i++) {
+			std::cout.width(10);
+			std::cout << i + 1;
+			std::cout.width(30);
+			std::cout << this->records_index_array[i]->fullName << " ";
+			std::cout.width(10);
+			std::cout << this->records_index_array[i]->number << " ";
+			std::cout.width(22);
+			std::cout << this->records_index_array[i]->position << " ";
+			std::cout.width(15);
+			std::cout << this->records_index_array[i]->birth_date << std::endl;
+		}
+		std::cout << "Print next 20? (1), previous 20? (0), exit (any other symbol) : ";
+		std::cin >> check;
+		if (check == 1) {
+			if (page - 1 > 200) {
+				std::cout << "Error..." << std::endl;
+				return;
+			}
+			PrintStruct(page + 1);
+		}
+		else if (check == 0) {
+			if (page - 1 < 1) {
+				std::cout << "Error..." << std::endl;
+				return;
+			}
+			PrintStruct(page - 1);
+		}
+		else {
+			return;
+		}
+		return;
+	}
 public:
 	Handler() {
 	}
@@ -104,98 +196,7 @@ public:
 		}
 	}
 
-	void GetDataFromFile(char* filename) {
-		record tmp{};
-		std::ifstream file(filename, std::ios::binary);
-		if (!file) {
-			std::cout << "Error opening file..." << std::endl;
-			return;
-		}
-		else {
-			while (file.read((char*)(&tmp), sizeof(record))) {
-				this->records_array.push_back(tmp);
-			}
-		}
-		return;
-	}
 
-	void swap(record** first, record** second) {
-		record* temp = *first;
-		*first = *second;
-		*second = temp;
-		return;
-	}
-
-	void QuickSort(int L, int R) {
-		int i = L;
-		int j = R;
-		record temp = *records_index_array[(i+j)/2];
-
-		while (i <= j) {
-			while (*records_index_array[i] < temp) {
-				i++;
-			}
-			while (*records_index_array[j] > temp) {
-				j--;
-			}
-			if (i <= j) {
-				swap(&records_index_array[i], &records_index_array[j]);
-				i++;
-				j--;
-			}
-		}
-		if (L < j) {
-			QuickSort(L, j);
-		}
-		if (i < R) {
-			QuickSort(i, R);
-		}
-		return;
-	}
-
-	void PrintStruct(size_t page) {
-		std::cout << std::endl;
-		system("CLS");
-		size_t start = (page-1) * 20;
-		size_t end = start + 20;
-		int check;
-		if (end > 4000) {
-			std::cout << "Out of range " << std::endl;
-			return;
-		}
-		PrintHeading();
-		for (size_t i = start; i < end; i++) {
-			std::cout.width(10);
-			std::cout << i + 1;
-			std::cout.width(30);
-			std::cout << this->records_index_array[i]->fullName << " ";
-			std::cout.width(10);
-			std::cout << this->records_index_array[i]->number << " ";
-			std::cout.width(22);
-			std::cout << this->records_index_array[i]->position << " ";
-			std::cout.width(15);
-			std::cout << this->records_index_array[i]->birth_date << std::endl;
-		}
-		std::cout << "Print next 20? (1), previous 20? (0), exit (any other symbol) : ";
-		std::cin >> check;
-		if (check == 1) {
-			if (page - 1 > 200) {
-				std::cout << "Error..." << std::endl;
-				return;
-			}
-			PrintStruct(page + 1);
-		}
-		else if (check == 0) {
-			if (page - 1 < 1) {
-				std::cout << "Error..." << std::endl;
-				return;
-			}
-			PrintStruct(page - 1);
-		}
-		else {
-			return;
-		}
-		return;
-	}
+	
 	
 };
