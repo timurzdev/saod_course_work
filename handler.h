@@ -1,6 +1,8 @@
 #pragma once
 #include <iostream>
 #include <fstream>
+#include <vector>
+
 
 class Handler {
 private:
@@ -10,26 +12,58 @@ private:
 		short int number; //2 bytes
 		char position[22]; //22 bytes
 		char birth_date[10]; //10 bytes
+		
 	};
-	record* records_array;
-	record** records_index_array;
-
-	record** GetIndexArray() {
-		records_index_array = new record * [4000];
-		for (size_t i = 0; i < 4000; i++) {
-			records_index_array[i] = &records_array[i];
+	
+	friend bool operator<(const record& node1, const record& node2) {
+		if (strcmp(node1.birth_date, node2.birth_date) == 0) {
+			return (strcmp(node1.fullName, node2.fullName));
 		}
-		return records_index_array;
+		else {
+			return (strcmp(node1.birth_date, node2.birth_date) < 0);
+		}
 	}
 
+	friend bool operator>(const record& node1, const record& node2) {
+		if (strcmp(node1.birth_date, node2.birth_date) == 0) {
+			return (strcmp(node1.fullName, node2.fullName));
+		}
+		else {
+			return (strcmp(node1.birth_date, node2.birth_date) > 0);
+		}
+	}
+
+	std::vector <record> records_array;
+	std::vector <record*> records_index_array;
+
+	void GetIndexArray() {
+		for (size_t i = 0; i < 4000; i++) {
+			records_index_array.push_back(&records_array[i]);
+		}
+		return;
+	}
+
+	
+
+	void PrintHeading() {
+		std::cout.width(10);
+		std::cout << "Index";
+		std::cout.width(30);
+		std::cout << "FullName";
+		std::cout.width(10);
+		std::cout << "Number";
+		std::cout.width(22);
+		std::cout << " Position ";
+		std::cout.width(15);
+		std::cout << "     Birth Date";
+		std::cout << std::endl;
+	}
 public:
 	Handler() {
-		records_array = nullptr;
-		records_index_array = nullptr;
 	}
 	~Handler() {
-		delete[] records_array;
-		delete[] records_index_array;
+		records_array.clear();
+		records_index_array.clear();
 	}
 	
 	void Menu() {
@@ -40,6 +74,7 @@ public:
 			std::cout << "0 - exit menu " << std::endl;
 			std::cout << "1 - load data " << std::endl;
 			std::cout << "2 - print data " << std::endl;
+			std::cout << "3 - sort data " << std::endl;
 			std::cout << "Input here: ";
 			std::cin >> menu;
 			std::cout << std::endl;
@@ -48,8 +83,8 @@ public:
 			case 0:
 				return;
 			case 1:
-				this->records_array = GetDataFromFile(filename);
-				this->records_index_array = GetIndexArray();
+				GetDataFromFile(filename);
+				GetIndexArray();
 				break;
 			case 2:
 				size_t page;
@@ -60,31 +95,62 @@ public:
 				}
 				PrintStruct(page);
 				break;
+			case 3:
+				QuickSort(0, 4000-1);
+				break;
 			default:
 				break;
 			}
 		}
 	}
 
-	record* GetDataFromFile(char* filename) {
-		this->records_array = new record[4000];
-		size_t index = 0;
+	void GetDataFromFile(char* filename) {
 		record tmp{};
 		std::ifstream file(filename, std::ios::binary);
 		if (!file) {
 			std::cout << "Error opening file..." << std::endl;
-			return records_array;
+			return;
 		}
 		else {
 			while (file.read((char*)(&tmp), sizeof(record))) {
-				records_array[index] = tmp;
-				index++;
-				if (index >= 4000) {
-					break;
-				}
+				this->records_array.push_back(tmp);
 			}
 		}
-		return records_array;
+		return;
+	}
+
+	void swap(record** first, record** second) {
+		record* temp = *first;
+		*first = *second;
+		*second = temp;
+		return;
+	}
+
+	void QuickSort(int L, int R) {
+		int i = L;
+		int j = R;
+		record temp = *records_index_array[(i+j)/2];
+
+		while (i <= j) {
+			while (*records_index_array[i] < temp) {
+				i++;
+			}
+			while (*records_index_array[j] > temp) {
+				j--;
+			}
+			if (i <= j) {
+				swap(&records_index_array[i], &records_index_array[j]);
+				i++;
+				j--;
+			}
+		}
+		if (L < j) {
+			QuickSort(L, j);
+		}
+		if (i < R) {
+			QuickSort(i, R);
+		}
+		return;
 	}
 
 	void PrintStruct(size_t page) {
@@ -92,21 +158,22 @@ public:
 		system("CLS");
 		size_t start = (page-1) * 20;
 		size_t end = start + 20;
+		int check;
 		if (end > 4000) {
 			std::cout << "Out of range " << std::endl;
 			return;
 		}
-		int check;
+		PrintHeading();
 		for (size_t i = start; i < end; i++) {
-			std::cout.width(5);
+			std::cout.width(10);
 			std::cout << i + 1;
 			std::cout.width(30);
 			std::cout << this->records_index_array[i]->fullName << " ";
-			std::cout.width(5);
+			std::cout.width(10);
 			std::cout << this->records_index_array[i]->number << " ";
 			std::cout.width(22);
 			std::cout << this->records_index_array[i]->position << " ";
-			std::cout.width(10);
+			std::cout.width(15);
 			std::cout << this->records_index_array[i]->birth_date << std::endl;
 		}
 		std::cout << "Print next 20? (1), previous 20? (0), exit (any other symbol) : ";
@@ -128,7 +195,6 @@ public:
 		else {
 			return;
 		}
-		//system("CLS");
 		return;
 	}
 	
