@@ -2,7 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
-
+#include <string.h>
 
 class Handler {
 private:
@@ -108,7 +108,7 @@ private:
 
 	void PrintStruct(size_t page) {
 		std::cout << std::endl;
-		system("CLS");
+		system("clear");
 		size_t start = (page - 1) * 20;
 		size_t end = start + 20;
 		int check;
@@ -162,7 +162,7 @@ public:
 		while (true) {
 			std::cout << std::endl;
 			int menu;
-			char filename[] = "./Debug/testBase2.dat";
+			char filename[] = "../testBase2.dat";
 			std::cout << "0 - exit menu " << std::endl;
 			std::cout << "1 - load data " << std::endl;
 			std::cout << "2 - print data " << std::endl;
