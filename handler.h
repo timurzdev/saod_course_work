@@ -14,24 +14,40 @@ private:
 		char birth_date[10]; //10 bytes
 		
 	};
-	
+
+	std::string static new_date(const char date[]){
+	    char temp_day[2];
+	    char temp_month[2];
+	    char temp_year[2];
+	    temp_day[0] = date[0];
+	    temp_day[1] = date[1];
+	    temp_month[0] = date[3];
+	    temp_month[1] = date[4];
+	    temp_year[0] = date[6];
+	    temp_year[1] = date[7];
+	    std::string temp = temp_year;
+	    temp += temp_month;
+	    temp += temp_year;
+	    return temp;
+	}
+
 	friend bool operator<(const record& node1, const record& node2) {
-		if (strcmp(node1.birth_date, node2.birth_date) == 0) {
-			return (strcmp(node1.fullName, node2.fullName));
+		if (( new_date(node1.birth_date) == new_date(node2.birth_date))) {
+			return (strcmp(node1.fullName, node2.fullName) < 0);
 		}
 		else {
-			return (strcmp(node1.birth_date, node2.birth_date) < 0);
+			return new_date(node1.birth_date) < new_date(node2.birth_date);
 		}
 	}
 
-	friend bool operator>(const record& node1, const record& node2) {
-		if (strcmp(node1.birth_date, node2.birth_date) == 0) {
-			return (strcmp(node1.fullName, node2.fullName));
-		}
-		else {
-			return (strcmp(node1.birth_date, node2.birth_date) > 0);
-		}
-	}
+    friend bool operator>(const record& node1, const record& node2) {
+        if (( new_date(node1.birth_date) == new_date(node2.birth_date))) {
+            return (strcmp(node1.fullName, node2.fullName) > 0);
+        }
+        else {
+            return new_date(node1.birth_date) > new_date(node2.birth_date);
+        }
+    }
 
 	std::vector <record> records_array;
 	std::vector <record*> records_index_array;
