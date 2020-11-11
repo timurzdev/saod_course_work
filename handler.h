@@ -251,9 +251,12 @@ private:
                 found_index++;
                 char *temp = takeYear(records_index_array[found_index]->birth_date);
                 if (strncmp(temp, key,strlen(key)) == 0) {
+                    delete [] temp;
                     addToQueue(*records_index_array[found_index], found_index);
-                } else break;
-                delete [] temp;
+                } else {
+                    delete [] temp;
+                    break;
+                }
             } while (true);
         }
         delete[] key;
