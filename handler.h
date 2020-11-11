@@ -37,14 +37,6 @@ private:
         return temp;
     }
 
-    /*void convertAllData(){
-        char temp[10];
-        for(size_t i = 0; i < records_array.size() -1 ; i++){
-            strncpy(temp,(new_date(records_array[i].birth_date).c_str()), 8);
-            strncpy(records_array[i].birth_date, temp,8);
-        }
-    }*/
-
     char *takeYear(char *data) {
         char *temp = new char[2];
         temp[0] = data[6];
@@ -347,7 +339,6 @@ public:
                     break;
                 case 3:
                     QuickSort(0, 4000 - 1);
-                    //convertAllData();
                     break;
                 case 4:
                     createQueue();
