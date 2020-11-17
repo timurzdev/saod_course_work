@@ -146,7 +146,7 @@ private:
 
     void PrintStruct(size_t page) {
         std::cout << std::endl;
-        system("clear");
+        system("cls");
         size_t start = (page - 1) * 20;
         size_t end = start + 20;
         int check;
@@ -290,7 +290,7 @@ private:
         std::cout << std::endl << "Press any key to continue..." << std::endl;
         int flag;
         std::cin >> flag;
-        system("clear");
+        system("cls");
         return;
     }
 
@@ -314,7 +314,7 @@ public:
         while (true) {
             std::cout << std::endl;
             int menu;
-            char filename[] = "../testBase2.dat";
+            char filename[] = "testBase2.dat";
             std::cout << "0 - exit menu " << std::endl;
             std::cout << "1 - load data " << std::endl;
             std::cout << "2 - print data " << std::endl;
