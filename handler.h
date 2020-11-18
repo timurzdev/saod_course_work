@@ -4,7 +4,7 @@
 #include <fstream>
 #include <vector>
 #include <string.h>
-
+#include <algorithm>
 
 class Handler {
 private:
@@ -18,52 +18,59 @@ private:
     struct node {
         record data{};
         size_t index;
-        node *ptrNext = nullptr;
+        node* ptrNext = nullptr;
     };
 
     std::string static new_date(const char date[]) {
-        char temp_day[2];
-        char temp_month[2];
-        char temp_year[2];
+        char temp_day[3];
+        char temp_month[3];
+        char temp_year[3];
         temp_day[0] = date[0];
         temp_day[1] = date[1];
         temp_month[0] = date[3];
         temp_month[1] = date[4];
         temp_year[0] = date[6];
         temp_year[1] = date[7];
+        temp_year[2] = temp_month[2] = temp_day[2] = 0;
         std::string temp = temp_year;
         temp += temp_month;
         temp += temp_year;
         return temp;
     }
 
-    char *takeYear(char *data) {
-        char *temp = new char[2];
+    char* takeYear(char* data) {
+        char* temp = new char[3];
         temp[0] = data[6];
         temp[1] = data[7];
+        temp[2] = 0;
         return temp;
     }
 
-    friend bool operator<(const record &node1, const record &node2) {
-        if ((new_date(node1.birth_date) == new_date(node2.birth_date))) {
+    friend bool operator<(record& node1, record& node2) {
+        std::string new_date_1 = new_date(node1.birth_date);
+        std::string new_date_2 = new_date(node2.birth_date);
+        if ((new_date_1 == new_date_2)) {
             return (strcmp(node1.fullName, node2.fullName) < 0);
-        } else {
-            return new_date(node1.birth_date) < new_date(node2.birth_date);
+        }
+        else {
+            return new_date_1 < new_date_2;
         }
     }
-
-    friend bool operator>(const record &node1, const record &node2) {
-        if ((new_date(node1.birth_date) == new_date(node2.birth_date))) {
+    friend bool operator>(record& node1, record& node2) {
+        std::string new_date_1 = new_date(node1.birth_date);
+        std::string new_date_2 = new_date(node2.birth_date);
+        if ((new_date_1 == new_date_2)) {
             return (strcmp(node1.fullName, node2.fullName) > 0);
-        } else {
-            return new_date(node1.birth_date) > new_date(node2.birth_date);
+        }
+        else {
+            return new_date_1 > new_date_2;
         }
     }
 
     std::vector<record> records_array;
-    std::vector<record *> records_index_array;
-    node *queue_root;
-    node *queue_tail;
+    std::vector<record*> records_index_array;
+    node* queue_root;
+    node* queue_tail;
 
 
     bool CheckCin() {
@@ -96,31 +103,24 @@ private:
         std::cout << std::endl;
     }
 
-    void GetDataFromFile(char *filename) {
+    void GetDataFromFile(char* filename) {
         record tmp{};
         std::ifstream file(filename, std::ios::binary);
         if (!file) {
             std::cout << "Error opening file..." << std::endl;
             return;
-        } else {
-            while (file.read((char *) (&tmp), sizeof(record))) {
+        }
+        else {
+            while (file.read((char*)(&tmp), sizeof(record))) {
                 this->records_array.push_back(tmp);
             }
         }
-        return;
-    }
-
-    void swap(record **first, record **second) {
-        record *temp = *first;
-        *first = *second;
-        *second = temp;
-        return;
     }
 
     void QuickSort(int L, int R) {
         int i = L;
         int j = R;
-        record temp = *records_index_array[(i + j) / 2];
+        record temp = *records_index_array[(j - i) / 2 + i];
 
         while (i <= j) {
             while (*records_index_array[i] < temp) {
@@ -130,7 +130,7 @@ private:
                 j--;
             }
             if (i <= j) {
-                swap(&records_index_array[i], &records_index_array[j]);
+                std::swap(records_index_array[i], records_index_array[j]);
                 i++;
                 j--;
             }
@@ -175,37 +175,41 @@ private:
                 return;
             }
             PrintStruct(page + 1);
-        } else if (check == 0) {
+        }
+        else if (check == 0) {
             if (page - 1 < 1) {
                 std::cout << "Error..." << std::endl;
                 return;
             }
             PrintStruct(page - 1);
-        } else {
+        }
+        else {
             return;
         }
         return;
     }
 
-    size_t binarySearch(char *key) {
+    size_t binarySearch(char* key) {
         const int keySize = 2;
         size_t mid, left = 0;
         size_t right = records_array.size() - 1;
         while (left < right) {
             mid = (left + right) / 2;
-            char *temp = takeYear(records_index_array[mid]->birth_date);
+            char* temp = takeYear(records_index_array[mid]->birth_date);
             if (strncmp(temp, key, keySize) < 0) {
                 left = mid + 1;
-            } else {
+            }
+            else {
                 right = mid;
             }
             delete[] temp;
         }
-        char *temp = takeYear(records_index_array[right]->birth_date);
+        char* temp = takeYear(records_index_array[right]->birth_date);
         if (strncmp(temp, key, keySize) == 0) {
             delete[] temp;
             return right;
-        } else {
+        }
+        else {
             delete[] temp;
             return -1;
         }
@@ -218,8 +222,9 @@ private:
             queue_root->data = data;
             queue_root->index = index;
             queue_tail = queue_root;
-        } else {
-            node *temp = new node;
+        }
+        else {
+            node* temp = new node;
             temp->data = data;
             temp->index = index;
             queue_tail->ptrNext = temp;
@@ -228,12 +233,12 @@ private:
     }
 
     void createQueue() {
-        while (queue_root!= nullptr){
+        while (queue_root != nullptr) {
             node* next = queue_root->ptrNext;
             delete queue_root;
             queue_root = next;
         }
-        char* key = new char[2];
+        char* key = new char[3];
         size_t count_of_tries = 0;
         std::cout << "Input first 2 searching symbols : ";
         while (true) {
@@ -249,12 +254,13 @@ private:
             addToQueue(*records_index_array[found_index], found_index);
             do {
                 found_index++;
-                char *temp = takeYear(records_index_array[found_index]->birth_date);
-                if (strncmp(temp, key,strlen(key)) == 0) {
-                    delete [] temp;
+                char* temp = takeYear(records_index_array[found_index]->birth_date);
+                if (strncmp(temp, key, strlen(key)) == 0) {
+                    delete[] temp;
                     addToQueue(*records_index_array[found_index], found_index);
-                } else {
-                    delete [] temp;
+                }
+                else {
+                    delete[] temp;
                     break;
                 }
             } while (true);
@@ -263,8 +269,22 @@ private:
         return;
     }
 
+    void print1(record* ptr, int i) {
+        record* temp = ptr;
+        std::cout.width(10);
+        std::cout << i;
+        std::cout.width(30);
+        std::cout << temp->fullName << " ";
+        std::cout.width(10);
+        std::cout << temp->number << " ";
+        std::cout.width(22);
+        std::cout << temp->position << " ";
+        std::cout.width(15);
+        std::cout << temp->birth_date << std::endl;
+    }
+
     void printQueue() {
-        node *temp = queue_root;
+        node* temp = queue_root;
         if (queue_root == nullptr) {
             std::cout << "Queue is empty..." << std::endl;
             return;
@@ -283,7 +303,7 @@ private:
             std::cout.width(15);
             std::cout << temp->data.birth_date << std::endl;
             temp = temp->ptrNext;
-            if (temp == nullptr){
+            if (temp == nullptr) {
                 break;
             }
         } while (true);
@@ -296,6 +316,8 @@ private:
 
 public:
     Handler() {
+        records_array.reserve(4000);
+        records_array.reserve(4000);
         queue_root = nullptr;
         queue_tail = nullptr;
     }
@@ -303,7 +325,7 @@ public:
     ~Handler() {
         records_array.clear();
         records_index_array.clear();
-        while (queue_root!= nullptr){
+        while (queue_root != nullptr) {
             node* next = queue_root->ptrNext;
             delete queue_root;
             queue_root = next;
@@ -325,32 +347,33 @@ public:
             std::cin >> menu;
             std::cout << std::endl;
             switch (menu) {
-                case 0:
-                    return;
-                case 1:
-                    GetDataFromFile(filename);
-                    GetIndexArray();
+            case 0:
+                return;
+            case 1:
+                GetDataFromFile(filename);
+                GetIndexArray();
+                break;
+            case 2:
+                size_t page;
+                std::cout << "Input page number(1 - 200)" << std::endl;
+                std::cin >> page;
+                if (page < 1 || page > 200) {
                     break;
-                case 2:
-                    size_t page;
-                    std::cout << "Input page number(1 - 200)" << std::endl;
-                    std::cin >> page;
-                    if (page < 1 || page > 200) {
-                        break;
-                    }
-                    PrintStruct(page);
-                    break;
-                case 3:
-                    QuickSort(0, 4000 - 1);
-                    break;
-                case 4:
-                    createQueue();
-                    break;
-                case 5:
-                    printQueue();
-                    break;
-                default:
-                    break;
+                }
+                PrintStruct(page);
+                break;
+            case 3:
+                //PrintStruct(1);
+                QuickSort(0, records_index_array.size() - 1);
+                break;
+            case 4:
+                createQueue();
+                break;
+            case 5:
+                printQueue();
+                break;
+            default:
+                break;
             }
         }
     }
