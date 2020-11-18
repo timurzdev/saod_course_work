@@ -5,10 +5,13 @@
 #include <vector>
 #include <string.h>
 #include <algorithm>
+#include "tree.h"
+
 
 class Handler {
 private:
-    struct record {
+    friend class Tree;
+     struct record {
         char fullName[30]; //30 bytes
         short int number; //2 bytes
         char position[22]; //22 bytes
@@ -314,6 +317,7 @@ private:
         return;
     }
 
+
 public:
     Handler() {
         records_array.reserve(4000);
@@ -346,6 +350,7 @@ public:
             std::cout << "Input here: ";
             std::cin >> menu;
             std::cout << std::endl;
+            Tree tree(this);
             switch (menu) {
             case 0:
                 return;
@@ -371,6 +376,9 @@ public:
                 break;
             case 5:
                 printQueue();
+                break;
+            case 6:
+                tree.getQueueRoot();
                 break;
             default:
                 break;
