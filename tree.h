@@ -27,6 +27,7 @@ private:
 	size_t tree_size;
 	vertex* tree_root;
 	void createWeightsArray() {
+		weightsArray.resize(30);
 		Handler::node* temp = handler.queue_root;
 		do {
 			weightsArray[(temp->data.number) / 10].weight++;
@@ -132,6 +133,17 @@ private:
 			buildTree(root, temp_index + 1, right);
 		}
 	}
+
+	void deleteTree(vertex* root) {
+		if (root == nullptr) {
+			return;
+		}
+		else {
+			deleteTree(root->l_ptr);
+			deleteTree(root->r_ptr);
+			delete root;
+		}
+	}
 public:
 	Tree() {
 		tree_root = nullptr;
@@ -139,7 +151,17 @@ public:
 		records_index_array = &handler.records_index_array;
 		weightsArray.resize(30);
 	}
+	~Tree() {
+		vertex* root = tree_root;
+		deleteTree(root->l_ptr);
+		deleteTree(root->r_ptr);
+		tree_root = nullptr;
+		delete root;
+		weightsArrayClear.clear();
+		weightsSumArray.clear();
+	}
 	void Menu() {
+		vertex* root;
 		while (true) {
 			std::cout << std::endl;
 			int menu;
@@ -184,6 +206,13 @@ public:
 				handler.printQueue();
 				break;
 			case 6:
+				if (tree_root) {
+					root = tree_root;
+					deleteTree(root->l_ptr);
+					deleteTree(root->r_ptr);
+					tree_root = nullptr;
+					delete root;
+				}
 				createWeightsArray();
 				createWeightsSumArray();
 				buildTree(&tree_root, 0, weightsArrayClear.size()-1);
