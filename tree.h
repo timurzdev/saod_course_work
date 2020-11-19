@@ -156,6 +156,7 @@ private:
 	}
 public:
 	Tree() {
+		root = nullptr;
 		tree_root = nullptr;
 		tree_size = 0;
 		records_index_array = &handler.records_index_array;
