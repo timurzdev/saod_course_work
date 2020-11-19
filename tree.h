@@ -10,7 +10,6 @@ class Tree {
 private:
 	Handler handler;
 	std::vector<int> weightsSumArray;
-
 	std::vector<Handler::record*>* records_index_array;
 	struct weights {
 		int weight = 0;
@@ -24,6 +23,7 @@ private:
 		vertex* r_ptr = nullptr;
 		vertex* l_ptr = nullptr;
 	};
+	vertex* root;
 	size_t tree_size;
 	vertex* tree_root;
 	void createWeightsArray() {
@@ -68,8 +68,18 @@ private:
 	void printLeftToRight(vertex* root) {
 		if (root != nullptr) {
 			printLeftToRight(root->l_ptr);
-			std::cout << root->data_ptr->number << " - " << root->weight << std::endl;
+			std::cout << "     " << root->weight << " - ";
+			handler.print1(root->data_ptr);
 			printLeftToRight(root->r_ptr);
+		}
+	}
+
+	void printTopToBottom(vertex* root) {
+		if (root != nullptr) {
+			std::cout << "     " << root->weight << " - ";
+			handler.print1(root->data_ptr);
+			printTopToBottom(root->l_ptr);
+			printTopToBottom(root->r_ptr);
 		}
 	}
 	void createWeightsSumArray() {
@@ -152,17 +162,19 @@ public:
 		weightsArray.resize(30);
 	}
 	~Tree() {
-		vertex* root = tree_root;
-		deleteTree(root->l_ptr);
-		deleteTree(root->r_ptr);
-		tree_root = nullptr;
-		delete root;
+		if (tree_root) {
+			root = tree_root;
+			deleteTree(root->l_ptr);
+			deleteTree(root->r_ptr);
+			tree_root = nullptr;
+			delete root;
+		}
 		weightsArrayClear.clear();
 		weightsSumArray.clear();
 	}
 	void Menu() {
-		vertex* root;
 		while (true) {
+			system("cls");
 			std::cout << std::endl;
 			int menu;
 			char filename[] = "testBase2.dat";
@@ -206,6 +218,8 @@ public:
 				handler.printQueue();
 				break;
 			case 6:
+				weightsArray.clear();
+				weightsArrayClear.clear();
 				if (tree_root) {
 					root = tree_root;
 					deleteTree(root->l_ptr);
@@ -215,10 +229,15 @@ public:
 				}
 				createWeightsArray();
 				createWeightsSumArray();
-				buildTree(&tree_root, 0, weightsArrayClear.size()-1);
+				buildTree(&tree_root, 0, weightsArrayClear.size() - 1);
 				break;
 			case 7:
+				std::cout << "Left to Right: " << std::endl;
 				printLeftToRight(tree_root);
+				std::cout << std::endl << "Top to Bottom: " << std::endl;
+				printTopToBottom(tree_root);
+				std::cin.get();
+				std::cin.ignore();
 				break;
 			default:
 				break;

@@ -272,10 +272,8 @@ private:
 		return;
 	}
 
-	void print1(record* ptr, int i) {
+	void print1(record* ptr) {
 		record* temp = ptr;
-		std::cout.width(10);
-		std::cout << i;
 		std::cout.width(30);
 		std::cout << temp->fullName << " ";
 		std::cout.width(10);
@@ -311,8 +309,8 @@ private:
 			}
 		} while (true);
 		std::cout << std::endl << "Press any key to continue..." << std::endl;
-		int flag;
-		std::cin >> flag;
+		std::cin.get();
+		std::cin.ignore();
 		system("cls");
 		return;
 	}
