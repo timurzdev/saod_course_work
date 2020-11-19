@@ -110,20 +110,22 @@ private:
 	}
 	int binaryIfSearch(int L, int R, double weight) {
 		int mid = 0;
+		int left = L;
+		int right = R;
 		while (L < R) {
 			mid = (L + R) / 2;
-			if ((double)(weightsSumArray[mid] - weightsSumArray[L]) < weight / 2
-				&& (double)(weightsSumArray[mid] - weightsSumArray[L] + weightsArrayClear[mid].weight) > weight / 2) {
+			if ((double)(weightsSumArray[mid] - weightsSumArray[left]) < weight / 2
+				&& (double)(weightsSumArray[mid] - weightsSumArray[left] + weightsArrayClear[mid].weight) > weight / 2) {
 				return mid;
 			}
 			else
 			{
-				if ((double)(weightsSumArray[mid] - weightsSumArray[L]) < weight / 2
-					&& !(double)(weightsSumArray[mid] - weightsSumArray[L] + weightsArrayClear[mid].weight) > weight / 2) {
+				if ((double)(weightsSumArray[mid] - weightsSumArray[left]) < weight / 2
+					&& !(double)(weightsSumArray[mid] - weightsSumArray[left] + weightsArrayClear[mid].weight) > weight / 2) {
 					L = mid + 1;
 				}
 				else {
-					R = mid;
+					R = mid - 1;
 				}
 			}
 		}
