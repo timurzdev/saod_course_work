@@ -108,20 +108,22 @@ private:
 			(*head_ptr)->weight = key->weight;
 		}
 	}
-	int binaryIfSearch(int L, int R, double weight) {
+	int binaryIfSearch(int L, int R, float weight) {
 		int mid = 0;
 		int left = L;
 		int right = R;
+		int sum;
 		while (L < R) {
 			mid = (L + R) / 2;
-			if ((double)(weightsSumArray[mid] - weightsSumArray[left]) < weight / 2
-				&& (double)(weightsSumArray[mid] - weightsSumArray[left] + weightsArrayClear[mid].weight) > weight / 2) {
+			sum = weightsSumArray[mid] - weightsSumArray[left];
+			if ((float)(sum) < weight / 2
+				&& (float)(sum + weightsArrayClear[mid].weight) > weight / 2) {
 				return mid;
 			}
 			else
 			{
-				if ((double)(weightsSumArray[mid] - weightsSumArray[left]) < weight / 2
-					&& !(double)(weightsSumArray[mid] - weightsSumArray[left] + weightsArrayClear[mid].weight) > weight / 2) {
+				if ((float)(sum) < weight / 2
+					&& !(float)(sum + weightsArrayClear[mid].weight) > weight / 2) {
 					L = mid + 1;
 				}
 				else {
@@ -129,20 +131,21 @@ private:
 				}
 			}
 		}
+		return L;
 	}
 
 
 	void buildTree(vertex** root, int L, int R) {
 		int left = L;
 		int right = R;
-		double weight;
+		float weight;
 		int temp_index;
 		if (left <= right) {
-			weight = (double)(weightsSumArray[right + 1] - weightsSumArray[left]);
+			weight = (float)(weightsSumArray[right + (int)1] - weightsSumArray[left]);
 			temp_index = binaryIfSearch(L, R, weight);
 			addDoubleIndirection(&weightsArrayClear[temp_index], root);
-			buildTree(root, left, temp_index - 1);
-			buildTree(root, temp_index + 1, right);
+			buildTree(&(*root)->l_ptr, left, temp_index - 1);
+			buildTree(&(*root)->r_ptr, temp_index + 1, right);
 		}
 	}
 
