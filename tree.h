@@ -149,6 +149,35 @@ private:
 		}
 	}
 
+	void searchInTree(int key, vertex* root) {
+		vertex* temp = root;
+		try
+		{
+			temp->data_ptr;
+			if (temp == nullptr) {
+				throw -1;
+			}
+		}
+		catch (int)
+		{
+			std::cout << "There are no element matches this key..." << std::endl;
+			return;
+		}
+		if (temp->data_ptr->number == key) {
+			std::cout << "Weight = " << temp->weight << std::endl;
+			handler.print1(temp->data_ptr);
+			return;
+		}
+		else {
+			if (temp->data_ptr->number < key) {
+				searchInTree(key,temp->r_ptr);
+			}
+			else {
+				searchInTree(key, temp->l_ptr);
+			}
+		}
+	}
+
 	void deleteTree(vertex* root) {
 		if (root == nullptr) {
 			return;
@@ -192,9 +221,11 @@ public:
 			std::cout << "5 - print queue " << std::endl;
 			std::cout << "6 - build tree " << std::endl;
 			std::cout << "7 - print tree " << std::endl;
+			std::cout << "8 - search in tree " << std::endl;
 			std::cout << "Input here: ";
 			std::cin >> menu;
 			std::cout << std::endl;
+			int search_key;
 			switch (menu) {
 			case 0:
 				return;
@@ -242,6 +273,13 @@ public:
 				printLeftToRight(tree_root);
 				std::cout << std::endl << "Top to Bottom: " << std::endl;
 				printTopToBottom(tree_root);
+				std::cin.get();
+				std::cin.ignore();
+				break;
+			case 8:
+				std::cout << "Input key(number field): ";
+				std::cin >> search_key;
+				searchInTree(search_key, tree_root);
 				std::cin.get();
 				std::cin.ignore();
 				break;
