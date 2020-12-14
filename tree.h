@@ -13,12 +13,12 @@ private:
 	std::vector<Handler::record*>* records_index_array;
 	struct weights {
 		int weight = 0;
-		Handler::record* data_ptr = nullptr;
+		std::vector< Handler::record*> data_ptr;
 	};
 	std::vector<weights> weightsArray;
 	std::vector<weights> weightsArrayClear;
 	struct vertex {
-		Handler::record* data_ptr = nullptr;
+		std::vector< Handler::record*> data_ptr;
 		int weight = 0;
 		vertex* r_ptr = nullptr;
 		vertex* l_ptr = nullptr;
@@ -31,7 +31,7 @@ private:
 		Handler::node* temp = handler.queue_root;
 		do {
 			weightsArray[(temp->data.number) / 10].weight++;
-			weightsArray[(temp->data.number) / 10].data_ptr = &temp->data;
+			weightsArray[(temp->data.number) / 10].data_ptr.push_back( &temp->data);
 			temp = temp->ptrNext;
 		} while (temp->ptrNext != nullptr);
 		for (size_t i = 0; i < weightsArray.size(); i++) {
@@ -44,12 +44,12 @@ private:
 	void sortWeightsArray(int L, int R) {
 		int i = L;
 		int j = R;
-		int temp = weightsArrayClear[(i + j) / 2].data_ptr->number;
+		int temp = weightsArrayClear[(i + j) / 2].data_ptr[0]->number;
 		while (i <= j) {
-			while (weightsArrayClear[i].data_ptr->number < temp) {
+			while (weightsArrayClear[i].data_ptr[0]->number < temp) {
 				i++;
 			}
-			while (weightsArrayClear[j].data_ptr->number > temp) {
+			while (weightsArrayClear[j].data_ptr[0]->number > temp) {
 				j--;
 			}
 			if (i <= j) {
@@ -68,16 +68,20 @@ private:
 	void printLeftToRight(vertex* root) {
 		if (root != nullptr) {
 			printLeftToRight(root->l_ptr);
-			std::cout << "     " << root->weight << " - ";
-			handler.print1(root->data_ptr);
+			for (auto& item : root->data_ptr) {
+				std::cout << "  "<< root->weight << "  ";
+				handler.print1(item);
+			}
 			printLeftToRight(root->r_ptr);
 		}
 	}
 
 	void printTopToBottom(vertex* root) {
 		if (root != nullptr) {
-			std::cout << "     " << root->weight << " - ";
-			handler.print1(root->data_ptr);
+			for (auto& item : root->data_ptr) {
+				std::cout << "  " << root->weight << "  ";
+				handler.print1(item);
+			}
 			printTopToBottom(root->l_ptr);
 			printTopToBottom(root->r_ptr);
 		}
@@ -92,10 +96,10 @@ private:
 	static void addDoubleIndirection(weights* key, vertex** root) {
 		vertex** head_ptr = root;
 		while (*head_ptr) {
-			if (key->data_ptr->number < (*head_ptr)->data_ptr->number) {
+			if (key->data_ptr[0]->number < (*head_ptr)->data_ptr[0]->number) {
 				head_ptr = &(*head_ptr)->l_ptr;
 			}
-			else if (key->data_ptr->number > (*head_ptr)->data_ptr->number) {
+			else if (key->data_ptr[0]->number > (*head_ptr)->data_ptr[0]->number) {
 				head_ptr = &(*head_ptr)->r_ptr;
 			}
 			else {
@@ -141,7 +145,7 @@ private:
 		float weight;
 		int temp_index;
 		if (left <= right) {
-			weight = (float)(weightsSumArray[right + (int)1] - weightsSumArray[left]);
+			weight = (float)(weightsSumArray[right + 1] - weightsSumArray[left]);
 			temp_index = binaryIfSearch(L, R, weight);
 			addDoubleIndirection(&weightsArrayClear[temp_index], root);
 			buildTree(&(*root)->l_ptr, left, temp_index - 1);
@@ -163,13 +167,15 @@ private:
 			std::cout << "There are no element matches this key..." << std::endl;
 			return;
 		}
-		if (temp->data_ptr->number == key) {
+		if (temp->data_ptr[0]->number == key) {
 			std::cout << "Weight = " << temp->weight << std::endl;
-			handler.print1(temp->data_ptr);
+			for (auto& item : temp->data_ptr) {
+				handler.print1(item);
+			}
 			return;
 		}
 		else {
-			if (temp->data_ptr->number < key) {
+			if (temp->data_ptr[0]->number < key) {
 				searchInTree(key,temp->r_ptr);
 			}
 			else {
